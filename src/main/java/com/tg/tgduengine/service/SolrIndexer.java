@@ -20,7 +20,7 @@ import com.tg.tgduengine.util.TSVReader;
 public class SolrIndexer {
 
 	public static String line;
-	public static final String url = "http://113.128.164.246:8983/solr/tg_core"; //Solr Instance
+	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonws.com:8983/solr/tg_core"; //Solr Instance
     public static SolrServer server ;
     public static List<String> location;
     static {
