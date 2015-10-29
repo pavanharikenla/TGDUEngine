@@ -1,4 +1,4 @@
-package com.tg.tdataom.util;
+package com.tg.tgduengine.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
