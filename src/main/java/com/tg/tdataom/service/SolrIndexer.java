@@ -1,4 +1,4 @@
-package com.vz.tdataom.service;
+package com.tg.tdataom.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.DateTime;
 
-import com.vz.tdataom.util.TSVReader;
+import com.tg.tdataom.util.TSVReader;
 
 public class SolrIndexer {
 

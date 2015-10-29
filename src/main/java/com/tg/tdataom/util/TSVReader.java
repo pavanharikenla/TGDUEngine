@@ -1,4 +1,4 @@
-package com.vz.tdataom.util;
+package com.tg.tdataom.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
