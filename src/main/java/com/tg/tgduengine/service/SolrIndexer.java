@@ -68,7 +68,7 @@ public class SolrIndexer {
 			cdr.addField("dateUsed", dateUsed);
 			
 			/** 
-			 * Generate random data dd 
+			 * Generate random data dd dhdh
 			 */
 			int age = generateAge();
 			String ageGroup = getAgeGroup(age);
