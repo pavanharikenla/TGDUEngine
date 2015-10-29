@@ -24,3 +24,10 @@ state - strring
 
 nohup java -jar start.jar & - nohup
 
+ps auxwww|grep -i 'server'
+
+lsof nohup.out
+sudo kill 9 pid
+
+
+
