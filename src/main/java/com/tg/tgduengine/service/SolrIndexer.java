@@ -71,8 +71,9 @@ public class SolrIndexer {
 			 * Generate random data
 			 */
 			int age = generateAge();
+			String ageGroup = getAgeGroup(age);
 			cdr.addField("age", age);
-			cdr.addField("agegroup", getAgeGroup(age));
+			cdr.addField("agegroup", ageGroup);
 			
 			String mobile = getMobileNumber(i);
 			cdr.addField("mobile", mobile);
@@ -80,7 +81,7 @@ public class SolrIndexer {
 			String location = generateUserLocation();
 			String[] splitLocation = location.split(",");
 			String city = splitLocation[0];
-			String state =  splitLocation[0];
+			String state =  splitLocation[1];
 			cdr.addField("city", city);
 			cdr.addField("state", state);
 			

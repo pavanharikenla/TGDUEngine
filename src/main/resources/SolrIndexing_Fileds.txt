@@ -1,0 +1,13 @@
+#Solr Properties
+
+#Filed Name - Data Type
+id	-	Number
+circlet_id	-	String
+dataUsageUsageStartTime 	- Date
+dataUsageUsageEndTime  	- Date
+dateUsed - Float
+age	- 	number
+agegroup - 	string
+mobile - number
+city - string 
+state - strring 
