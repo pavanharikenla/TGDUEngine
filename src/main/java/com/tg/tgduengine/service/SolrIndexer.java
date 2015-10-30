@@ -20,10 +20,11 @@ import com.tg.tgduengine.util.TSVReader;
 public class SolrIndexer {
 
 	public static String line;
-	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonws.com:8983/solr/tg_core"; //Solr Instance
+	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonaws.com:8983/solr/collection1"; //Solr Instance
     public static SolrServer server ;
     public static List<String> location;
     static {
+    	
     	  location = new ArrayList<String>(10);
     	  location.add("Newark,New Jersey");
     	  location.add("San Franciscp,California");
@@ -65,6 +66,9 @@ public class SolrIndexer {
 			cdr.addField("circlet_id", circleId);
 			cdr.addField("dataUsageUsageStartTime", dataUsageUsageStartTime);
 			cdr.addField("dataUsageUsageEndTime", dataUsageUsageEndTime);
+			
+			if (dateUsed !=null)
+				dateUsed = "1";
 			cdr.addField("dateUsed", dateUsed);
 			
 			/** 
@@ -87,6 +91,9 @@ public class SolrIndexer {
 			
 			server.add(cdr);
 			server.commit();
+			
+			if(i == 10)
+				break;
 		}
 	}
 	
