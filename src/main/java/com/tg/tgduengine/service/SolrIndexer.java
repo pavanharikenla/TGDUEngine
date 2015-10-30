@@ -63,7 +63,7 @@ public class SolrIndexer {
 	public void indexCDRData() throws FileNotFoundException, IOException, SolrServerException {
 
 		TSVReader tsvReader = new TSVReader();
-		List<String[]> parsedDataList = tsvReader.someMethod();
+		List<String[]> parsedDataList = tsvReader.parseData();
 		SolrServer server = new HttpSolrServer(url);
 		RandomGen randomGen = new RandomGen();
 		
