@@ -15,6 +15,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.DateTime;
 
+import com.tg.tgduengine.util.RandomGen;
 import com.tg.tgduengine.util.TSVReader;
 
 public class SolrIndexer {
@@ -23,6 +24,7 @@ public class SolrIndexer {
 	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonaws.com:8983/solr/collection1"; //Solr Instance
     public static SolrServer server ;
     public static List<String> location;
+    public static List<String> calledPartyNetwork;
     static {
     	
     	  location = new ArrayList<String>(10);
@@ -38,6 +40,15 @@ public class SolrIndexer {
     	  location.add("Austin,Texas");
     	  location.add("Charlotte,North Carolina");
     	  
+    	  calledPartyNetwork = new ArrayList<String>(6);
+    	  calledPartyNetwork.add("AT&T");
+    	  calledPartyNetwork.add("Verizon");
+    	  calledPartyNetwork.add("Lyca");
+    	  calledPartyNetwork.add("T-Mobile");
+    	  calledPartyNetwork.add("Sprint");
+    	  calledPartyNetwork.add("CenturyLink");
+    	  
+    	  
     }
   
     
@@ -51,8 +62,9 @@ public class SolrIndexer {
 	public void indexCDRData() throws FileNotFoundException, IOException, SolrServerException {
 
 		TSVReader tsvReader = new TSVReader();
-		List<String[]> parsedDataList = tsvReader.someMethod();
+		List<String[]> parsedDataList = tsvReader.parseData();
 		SolrServer server = new HttpSolrServer(url);
+		RandomGen randomGen = new RandomGen();
 		
 		for(int i=0; i<parsedDataList.size(); i++){
 			String[] cdrArrary = parsedDataList.get(i);
@@ -88,6 +100,14 @@ public class SolrIndexer {
 			String state =  splitLocation[1];
 			cdr.addField("city", city);
 			cdr.addField("state", state);
+			
+			/**
+			 * Add Called Mobile Number and User'd Email Address
+			 */
+			long calledMobileNumber = randomGen.getMobileNum();
+			String email = randomGen.getEmail();
+			cdr.addField("calledMobileNumber", calledMobileNumber);
+			cdr.addField("email", email);
 			
 			server.add(cdr);
 			server.commit();

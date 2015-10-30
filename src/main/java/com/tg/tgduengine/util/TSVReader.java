@@ -4,19 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
-
-import org.joda.time.DateTime;
 
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 
 public class TSVReader {
 
-	public List<String[]> someMethod(){
+	public List<String[]> parseData(){
 		TsvParserSettings settings = new TsvParserSettings();
-		settings.selectIndexes(0, 1, 7);
+		settings.selectIndexes(0, 1, 7); //0,1,7 -> Mobile Data Usage
+		
 	    //the file used in the example uses '\n' as the line separator sequence.
 	    //the line separator sequence is defined here to ensure systems such as MacOS and Windows
 	    //are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
