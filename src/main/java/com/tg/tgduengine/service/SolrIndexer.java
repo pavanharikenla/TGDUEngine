@@ -69,14 +69,14 @@ public class SolrIndexer {
 		
 		String[] cdrArrary;
 		String circle_id = "";
-		DateTime d_usage_start_time;
-		DateTime d_usage_end_time;
+		DateTime data_usage_start_time;
+		DateTime data_usage_end_time;
 		String data_used = "";
 		int age;
-		String ageGroup;
+		String age_group;
 		String mobile;
 		String location;
-		String[] splitLocation;
+		String[] split_location;
 		String city;
 		String state;
 		long called_mobile;
@@ -90,31 +90,31 @@ public class SolrIndexer {
 			//Fetched Parsed Data
 			cdrArrary = parsedDataList.get(i);
 			circle_id = cdrArrary[0];
-			d_usage_start_time = getDateTime(cdrArrary[1]);
-			d_usage_end_time = d_usage_start_time.plusMinutes(10);
+			data_usage_start_time = getDateTime(cdrArrary[1]);
+			data_usage_end_time = data_usage_start_time.plusMinutes(10);
 			data_used = cdrArrary[2];
 			
 			if (data_used != null)
 				data_used = "1";
 			
 			age = generateAge();
-			ageGroup = getAgeGroup(age);
+			age_group = getAgeGroup(age);
 			mobile = getMobileNumber(i);
 			location = generateUserLocation();
-			splitLocation = location.split(",");
-			city = splitLocation[0];
-			state =  splitLocation[1];
+			split_location = location.split(",");
+			city = split_location[0];
+			state =  split_location[1];
 	    	called_mobile = randomGen.getMobileNum();
 			email = randomGen.getEmail();
 			
 			// Construct Solr Document
 			cdr.addField("id", i);
 			cdr.addField("circle_id", circle_id);
-			cdr.addField("d_usage_start_time", d_usage_start_time);
-			cdr.addField("dataUsageUsageEndTime", d_usage_end_time);
+			cdr.addField("data_usage_start_time", data_usage_start_time);
+			cdr.addField("data_usage_end_time", data_usage_end_time);
 			cdr.addField("data_used", data_used);
 			cdr.addField("age", age);
-			cdr.addField("agegroup", ageGroup);
+			cdr.addField("age_group", age_group);
 			cdr.addField("mobile", mobile);
 			cdr.addField("city", city);
 			cdr.addField("state", state);
