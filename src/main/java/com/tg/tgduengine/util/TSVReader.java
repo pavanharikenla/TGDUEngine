@@ -14,7 +14,7 @@ import com.univocity.parsers.tsv.TsvParserSettings;
 
 public class TSVReader {
 
-	public List<String[]> someMethod(){
+	public List<String[]> parseData(){
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.selectIndexes(0, 1, 7);
 	    //the file used in the example uses '\n' as the line separator sequence.
