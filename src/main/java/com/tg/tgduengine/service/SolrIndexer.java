@@ -68,27 +68,27 @@ public class SolrIndexer {
 		RandomGen randomGen = new RandomGen();
 		
 		String[] cdrArrary;
-		String circle_id = "";
-		DateTime data_usage_start_time; //date time
-		DateTime data_usage_end_time; //date time
+		String circle_id = ""; //Solr Field 1
+		DateTime data_usage_start_time; //Solr Field 2 data type = datetime
+		DateTime data_usage_end_time; //Solr Field 3 data type = datetime
 		String data_used_string = "";
-		int data_used = 1; //by default the data used is set to 1 MB
-		int age;
-		String age_group;
-		String mobile;
-		String location;
+		int data_used = 1; //Solr Field 4. by default the data used is set to 1 MB
+		int age; //Solr Field 5
+		String age_group; //Solr Field 6
+		String mobile; //Solr Field 7
+		String location; 
 		String[] split_location;
 		String[] data_used_split; 
-		String city;
-		String state;
-		long called_mobile;
-		String email;
+		String city; //Solr Field 8
+		String state; //Solr Field 9
+		long called_mobile; //Solr Field 10
+		String email; //Solr Field 11
 		
 		
 		for(int i=0; i<parsedDataList.size(); i++){
 			SolrInputDocument cdr = new SolrInputDocument();
 			
-			//Fetched Parsed Data
+			//Fetch Parsed Data
 			cdrArrary = parsedDataList.get(i);
 			circle_id = cdrArrary[0];
 			data_usage_start_time = getDateTime(cdrArrary[1]);
