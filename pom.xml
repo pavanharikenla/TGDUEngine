@@ -6,13 +6,6 @@
   
   <dependencies>
 		
-		
-	<!-- 	<dependency>
-		  <groupId>com.googlecode.efficient-java-matrix-library</groupId>
-		  <artifactId>ejml</artifactId>
-		  <version>0.23</version>
-		</dependency> -->
-		
 		 <dependency>
 			<artifactId>solr-solrj</artifactId>
 			<groupId>org.apache.solr</groupId>
