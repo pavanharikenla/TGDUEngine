@@ -69,21 +69,26 @@ public class SolrIndexer {
 		
 		String[] cdrArrary;
 		String circle_id = ""; //Solr Field 1
-		DateTime data_usage_start_time; //Solr Field 2 data type = datetime
-		DateTime data_usage_end_time; //Solr Field 3 data type = datetime
+		
+		/**
+		 * Sample Date Value is: 2013-12-31T04:40:00.000+05:30
+		 * So the data type in solar should be datetime (TrieDateField )
+		 */
+		DateTime data_usage_start_time; //Solr Field 2 
+		DateTime data_usage_end_time; //Solr Field 3 
+		
 		String data_used_string = "";
 		int data_used = 1; //Solr Field 4. by default the data used is set to 1 MB
 		int age; //Solr Field 5
 		String age_group; //Solr Field 6
 		String mobile; //Solr Field 7
-		String location; 
+		String location_string; 
 		String[] split_location;
 		String[] data_used_split; 
 		String city; //Solr Field 8
 		String state; //Solr Field 9
 		long called_mobile; //Solr Field 10
 		String email; //Solr Field 11
-		
 		
 		for(int i=0; i<parsedDataList.size(); i++){
 			SolrInputDocument cdr = new SolrInputDocument();
@@ -103,8 +108,8 @@ public class SolrIndexer {
 			age = generateAge();
 			age_group = getAgeGroup(age);
 			mobile = getMobileNumber(i);
-			location = generateUserLocation();
-			split_location = location.split(",");
+			location_string = generateUserLocation();
+			split_location = location_string.split(",");
 			city = split_location[0];
 			state =  split_location[1];
 	    	called_mobile = randomGen.getMobileNum();
