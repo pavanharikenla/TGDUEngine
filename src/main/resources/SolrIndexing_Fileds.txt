@@ -1,4 +1,4 @@
-#Sample adata download - https://dandelion.eu/datagems/SpazioDati/telecom-sms-call-internet-mi/resource/
+ #Sample adata download - https://dandelion.eu/datagems/SpazioDati/telecom-sms-call-internet-mi/resource/
 
 #Solr Properties
 
