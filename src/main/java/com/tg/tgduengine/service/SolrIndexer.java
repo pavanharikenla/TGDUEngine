@@ -66,15 +66,18 @@ public class SolrIndexer {
     * @throws IOException
     * @throws SolrServerException
     */
-	public void indexCDRData() throws FileNotFoundException, IOException, SolrServerException {
+	public void indexCDRData(int cdrType) throws FileNotFoundException, IOException, SolrServerException {
 
 		TSVReader tsvReader = new TSVReader();
 		List<String[]> parsedDataList = tsvReader.parseData();
 		SolrServer server = new HttpSolrServer(url);
 		RandomGen randomGen = new RandomGen();
 		
+		
 		String[] cdrArrary;
+		int cdr_type = cdrType; //Solr Filed 18
 		String circle_id = ""; //Solr Field 1
+		
 		
 		/**
 		 * Sample Date Value is: 2013-12-31T04:40:00.000+05:30
@@ -93,16 +96,17 @@ public class SolrIndexer {
 		String[] data_used_split; 
 		String city; //Solr Field 8
 		String state; //Solr Field 9
-		long recepient_mobile; //Solr Field 10
 		String email; //Solr Field 11
+		String mobile_app_name = ""; //Solr Filed 12
 		
-		String mobile_app_name; //Solr Filed 12
-		DateTime call_start; //Solr Filed 13
-		DateTime call_end; //Solr Filed 14
-		float call_duartion;// //Solr Filed 15
-		float call_cost; //Solr Filed 16
-		String recipient_network; //Solr Filed 17
-		String cdr_type; //Solr Filed 18
+		
+		long recepient_mobile = 1234567890; //Solr Field 10
+		DateTime call_start = new DateTime(); //Solr Filed 13
+		DateTime call_end = new DateTime(); //Solr Filed 14
+		float call_duartion = 0.0F;// //Solr Filed 15
+		float call_cost = 0.0F; //Solr Filed 16
+		String recipient_network = ""; //Solr Filed 17
+		
 		
 		
 		for(int i=0; i<parsedDataList.size(); i++){
@@ -110,16 +114,9 @@ public class SolrIndexer {
 			
 			//Fetch Parsed Data
 			cdrArrary = parsedDataList.get(i);
-			circle_id = cdrArrary[0];
-			data_usage_start_time = getDateTime(cdrArrary[1]);
-			data_usage_end_time = data_usage_start_time.plusMinutes(10);
 			
-			if(cdrArrary[2] != null) {
-				data_used_string = cdrArrary[2];
-				data_used_split = data_used_string.split(".");
-				data_used = Integer.parseInt(data_used_split[0]);
-			}
-				
+			//Common Fields
+			circle_id = cdrArrary[0];
 			age = generateAge();
 			age_group = getAgeGroup(age);
 			mobile = getMobileNumber(i);
@@ -127,23 +124,71 @@ public class SolrIndexer {
 			split_location = location_string.split(",");
 			city = split_location[0];
 			state =  split_location[1];
-			recepient_mobile = randomGen.getMobileNum();
 			email = randomGen.getEmail();
 			
-			// Construct Solr Document
 			cdr.addField("id", i);
 			cdr.addField("circle_id", circle_id);
-			cdr.addField("data_usage_start_time", data_usage_start_time);
-			cdr.addField("data_usage_end_time", data_usage_end_time);
-			cdr.addField("data_used", data_used);
 			cdr.addField("age", age);
 			cdr.addField("age_group", age_group);
 			cdr.addField("mobile", mobile);
 			cdr.addField("city", city);
 			cdr.addField("state", state);
-			cdr.addField("called_mobile", recepient_mobile);
 			cdr.addField("email", email);
-
+			
+			//Fields specific to Usage
+			if (cdr_type == 1) { 
+				//Static Data Calculation
+				/*String tweetDate = "";
+				if(i < 3233)
+					tweetDate = "2015-10-31T16:00:31.000Z";
+				else if (i >= 3233 && i < 5999)
+					tweetDate = "2015-10-30T12:10:31.000Z";
+				else if (i >= 5999 && i < 9134)
+					tweetDate = "2015-10-29T10:22:31.000Z";
+				else if (i >= 9134 && i < 14474)
+					tweetDate = "2015-10-28T13:34:31.000Z";
+				else if (i >= 14474 && i < 19934)
+					tweetDate = "2015-10-27T18:00:31.000Z";
+				else if (i >= 19934 && i < 24000)
+					tweetDate = "2015-10-26T21:55:31.000Z";
+				else if (i >= 24000)
+					tweetDate = "2015-10-25T15:12:31.000Z";*/
+				
+				data_usage_start_time = getDateTime(cdrArrary[1]);
+				data_usage_end_time = data_usage_start_time.plusMinutes(10);
+				
+				if(cdrArrary[2] != null) {
+					data_used_string = cdrArrary[2];
+					data_used_split = data_used_string.split(".");
+					data_used = Integer.parseInt(data_used_split[0]);
+				}
+				//mobile_app_name = getAppName_or_URL;
+				
+				cdr.addField("data_usage_start_time", data_usage_start_time);
+				cdr.addField("data_usage_end_time", data_usage_end_time);
+				cdr.addField("data_used", data_used);
+				cdr.addField("mobile_app_name", mobile_app_name);
+		
+			} else if (cdr_type == 2){ //This is for call
+				
+				recepient_mobile = randomGen.getMobileNum();
+				//Fetch Call Start
+				//Fetch Call End
+				//Fetch Call Duration
+				//Fetch Call Cost
+				//Fetch recipient_network using getReceipientNetwork()
+				
+				cdr.addField("recepient_mobile", recepient_mobile);
+				cdr.addField("call_start", call_start);
+				cdr.addField("call_end", call_end);
+				cdr.addField("call_duartion", call_duartion);
+				cdr.addField("call_cost", call_cost);
+				cdr.addField("recipient_network", recipient_network);
+				
+			} else if (cdr_type == 3){ //This is for SMS
+				
+			}
+			
 			// Commit the Solr Document
 			server.add(cdr);
 			server.commit();
@@ -266,8 +311,8 @@ public class SolrIndexer {
 		// and here's how to get the String representation
 		//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
 		
-	/*	System.out.println("Start Time: "+dt);
-		System.out.println("End Time: "+dataisageEndTime);*/
+		/*	System.out.println("Start Time: "+dt);
+			System.out.println("End Time: "+dataisageEndTime);*/
 	
 		return dataUsageUsageTime;
 	}
@@ -295,8 +340,14 @@ public class SolrIndexer {
 	}
 	public static void main(String[] args) throws FileNotFoundException, IOException, SolrServerException {
 		
+		/**
+		 * Command Line Arguments 1 for Usage, 2 for Calls, 3 for SMS - for each
+		 * value the input file should be different
+		 */
+		
 		SolrIndexer solrIndexer = new SolrIndexer();
-		solrIndexer.indexCDRData();
+		int cdrType = Integer.parseInt(args[0]);
+		solrIndexer.indexCDRData(cdrType);
 		//deleteAllIndexData();
 		//query_data();
 	}
