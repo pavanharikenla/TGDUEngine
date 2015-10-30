@@ -28,7 +28,6 @@ public class SolrIndexer {
     public static List<String> cDRTypeList; 
     
     static {
-    	
     	  location = new ArrayList<String>(11);
     	  location.add("Newark,New Jersey");
     	  location.add("San Francisco,California");
