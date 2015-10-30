@@ -69,19 +69,20 @@ public class SolrIndexer {
 		
 		String[] cdrArrary;
 		String circle_id = "";
-		DateTime data_usage_start_time;
-		DateTime data_usage_end_time;
-		String data_used = "";
+		DateTime data_usage_start_time; //date time
+		DateTime data_usage_end_time; //date time
+		String data_used_string = "";
+		int data_used = 1; //by default the data used is set to 1 MB
 		int age;
 		String age_group;
 		String mobile;
 		String location;
 		String[] split_location;
+		String[] data_used_split; 
 		String city;
 		String state;
 		long called_mobile;
 		String email;
-		
 		
 		
 		for(int i=0; i<parsedDataList.size(); i++){
@@ -92,11 +93,13 @@ public class SolrIndexer {
 			circle_id = cdrArrary[0];
 			data_usage_start_time = getDateTime(cdrArrary[1]);
 			data_usage_end_time = data_usage_start_time.plusMinutes(10);
-			data_used = cdrArrary[2];
 			
-			if (data_used != null)
-				data_used = "1";
-			
+			if(cdrArrary[2] != null) {
+				data_used_string = cdrArrary[2];
+				data_used_split = data_used_string.split(".");
+				data_used = Integer.parseInt(data_used_split[0]);
+			}
+				
 			age = generateAge();
 			age_group = getAgeGroup(age);
 			mobile = getMobileNumber(i);
