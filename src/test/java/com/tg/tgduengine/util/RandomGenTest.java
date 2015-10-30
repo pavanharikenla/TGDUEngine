@@ -19,11 +19,11 @@ public class RandomGenTest {
 
   @Test
   public void email() {
-    rd.email();
+    rd.getEmail();
   }
 
   @Test
   public void mobileNum() {
-    rd.mobileNum();
+    rd.getMobileNum();
   }
 }
