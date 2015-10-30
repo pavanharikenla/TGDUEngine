@@ -65,6 +65,7 @@ public class SolrIndexer {
 		TSVReader tsvReader = new TSVReader();
 		List<String[]> parsedDataList = tsvReader.someMethod();
 		SolrServer server = new HttpSolrServer(url);
+		RandomGen randomGen = new RandomGen();
 		
 		for(int i=0; i<parsedDataList.size(); i++){
 			String[] cdrArrary = parsedDataList.get(i);
@@ -100,6 +101,15 @@ public class SolrIndexer {
 			String state =  splitLocation[1];
 			cdr.addField("city", city);
 			cdr.addField("state", state);
+			
+			/**
+			 * Add Called Mobile Number and User'd Email Address
+			 */
+			long calledMobileNumber = randomGen.getMobileNum();
+			String email = randomGen.getEmail();
+			cdr.addField("calledMobileNumber", calledMobileNumber);
+			cdr.addField("email", email);
+
 			
 			server.add(cdr);
 			server.commit();
