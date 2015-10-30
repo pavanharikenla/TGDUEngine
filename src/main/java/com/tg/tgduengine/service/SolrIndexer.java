@@ -24,6 +24,7 @@ public class SolrIndexer {
     public static SolrServer server ;
     public static List<String> location;
     static {
+    	
     	  location = new ArrayList<String>(10);
     	  location.add("Newark,New Jersey");
     	  location.add("San Franciscp,California");
