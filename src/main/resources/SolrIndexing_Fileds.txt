@@ -11,8 +11,19 @@ dateUsed - Float
 age	- 	number
 agegroup - 	string
 mobile - number
+
 city - string 
-state - strring 
+state - string 
+App - String
+dataLimit - Float
+email - String
+callstart - date
+callend - date
+recipient - String
+callduartion - float
+callcost - float
+recipientNetwork - string
+
 
 //updated
 <field name="dataUsageUsageStartTime" type="date" indexed="true" stored="true"/>
