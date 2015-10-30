@@ -24,7 +24,7 @@ public class TSVReader {
 	    List<String[]> allRows = null;
 	    // parses all rows in one go.
 	    try {
-			allRows = parser.parseAll(getReader("C:\\Ravi\\SampleTSV.txt"));
+			allRows = parser.parseAll(getReader("C:\\Ravi\\Part_1.txt"));
 				/*long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
 				DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
 				DateTime  dataisageEndTime = dt.plusMinutes(10);

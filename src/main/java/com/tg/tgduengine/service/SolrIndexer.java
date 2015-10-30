@@ -27,9 +27,9 @@ public class SolrIndexer {
     public static List<String> calledPartyNetwork; 
     static {
     	
-    	  location = new ArrayList<String>(10);
+    	  location = new ArrayList<String>(11);
     	  location.add("Newark,New Jersey");
-    	  location.add("San Franciscp,California");
+    	  location.add("San Francisco,California");
     	  location.add("San Antonio,Texas");
     	  location.add("Chicago,Illinois");
     	  location.add("Jacksonville,Florida");
@@ -39,6 +39,7 @@ public class SolrIndexer {
     	  location.add("Oklahoma City,Oklahoma");
     	  location.add("Austin,Texas");
     	  location.add("Charlotte,North Carolina");
+    	  location.add("Baskin Ridge,Texas");
     	  
     	  calledPartyNetwork = new ArrayList<String>(6);
     	  calledPartyNetwork.add("AT&T");
@@ -47,8 +48,7 @@ public class SolrIndexer {
     	  calledPartyNetwork.add("T-Mobile");
     	  calledPartyNetwork.add("Sprint");
     	  calledPartyNetwork.add("CenturyLink");
-
-    	  
+   	  
     	  
     }
   
@@ -67,55 +67,66 @@ public class SolrIndexer {
 		SolrServer server = new HttpSolrServer(url);
 		RandomGen randomGen = new RandomGen();
 		
+		String[] cdrArrary;
+		String circle_id = "";
+		DateTime d_usage_start_time;
+		DateTime d_usage_end_time;
+		String data_used = "";
+		int age;
+		String ageGroup;
+		String mobile;
+		String location;
+		String[] splitLocation;
+		String city;
+		String state;
+		long called_mobile;
+		String email;
+		
+		
+		
 		for(int i=0; i<parsedDataList.size(); i++){
-			String[] cdrArrary = parsedDataList.get(i);
-			String circleId = cdrArrary[0];
-			DateTime dataUsageUsageStartTime = getDateTime(cdrArrary[1]);
-			DateTime dataUsageUsageEndTime = dataUsageUsageStartTime.plusMinutes(10);
-			String dateUsed = cdrArrary[2];
-			
 			SolrInputDocument cdr = new SolrInputDocument();
+			
+			//Fetched Parsed Data
+			cdrArrary = parsedDataList.get(i);
+			circle_id = cdrArrary[0];
+			d_usage_start_time = getDateTime(cdrArrary[1]);
+			d_usage_end_time = d_usage_start_time.plusMinutes(10);
+			data_used = cdrArrary[2];
+			
+			if (data_used != null)
+				data_used = "1";
+			
+			age = generateAge();
+			ageGroup = getAgeGroup(age);
+			mobile = getMobileNumber(i);
+			location = generateUserLocation();
+			splitLocation = location.split(",");
+			city = splitLocation[0];
+			state =  splitLocation[1];
+	    	called_mobile = randomGen.getMobileNum();
+			email = randomGen.getEmail();
+			
+			// Construct Solr Document
 			cdr.addField("id", i);
-			cdr.addField("circlet_id", circleId);
-			cdr.addField("dataUsageUsageStartTime", dataUsageUsageStartTime);
-			cdr.addField("dataUsageUsageEndTime", dataUsageUsageEndTime);
-			
-			if (dateUsed !=null)
-				dateUsed = "1";
-			cdr.addField("dateUsed", dateUsed);
-			
-			/** 
-			 * Generate random data dd dhdh
-			 */
-			int age = generateAge();
-			String ageGroup = getAgeGroup(age);
+			cdr.addField("circle_id", circle_id);
+			cdr.addField("d_usage_start_time", d_usage_start_time);
+			cdr.addField("dataUsageUsageEndTime", d_usage_end_time);
+			cdr.addField("data_used", data_used);
 			cdr.addField("age", age);
 			cdr.addField("agegroup", ageGroup);
-			
-			String mobile = getMobileNumber(i);
 			cdr.addField("mobile", mobile);
-			
-			String location = generateUserLocation();
-			String[] splitLocation = location.split(",");
-			String city = splitLocation[0];
-			String state =  splitLocation[1];
 			cdr.addField("city", city);
 			cdr.addField("state", state);
-			
-			/**
-			 * Add Called Mobile Number and User'd Email Address
-			 */
-			long calledMobileNumber = randomGen.getMobileNum();
-			String email = randomGen.getEmail();
-			cdr.addField("calledMobileNumber", calledMobileNumber);
+			cdr.addField("called_mobile", called_mobile);
 			cdr.addField("email", email);
 
-			
+			// Commit the Solr Document
 			server.add(cdr);
 			server.commit();
 			
-			if(i == 10)
-				break;
+			if(i% 100 == 0)
+				System.out.println("The counter: "+i);
 		}
 	}
 	
