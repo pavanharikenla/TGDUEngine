@@ -24,7 +24,9 @@ public class SolrIndexer {
 	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonaws.com:8983/solr/collection1"; //Solr Instance
     public static SolrServer server ;
     public static List<String> location;
-    public static List<String> calledPartyNetwork; 
+    public static List<String> calledPartyNetwork;
+    public static List<String> cDRTypeList; 
+    
     static {
     	
     	  location = new ArrayList<String>(11);
@@ -48,8 +50,12 @@ public class SolrIndexer {
     	  calledPartyNetwork.add("T-Mobile");
     	  calledPartyNetwork.add("Sprint");
     	  calledPartyNetwork.add("CenturyLink");
-   	  
     	  
+    	  cDRTypeList = new ArrayList<String>(3);
+    	  cDRTypeList.add("Data");
+    	  cDRTypeList.add("Call");
+    	  cDRTypeList.add("SMS");
+   		  
     }
   
     
@@ -87,8 +93,17 @@ public class SolrIndexer {
 		String[] data_used_split; 
 		String city; //Solr Field 8
 		String state; //Solr Field 9
-		long called_mobile; //Solr Field 10
+		long recepient_mobile; //Solr Field 10
 		String email; //Solr Field 11
+		
+		String mobile_app_name; //Solr Filed 12
+		DateTime call_start; //Solr Filed 13
+		DateTime call_end; //Solr Filed 14
+		float call_duartion;// //Solr Filed 15
+		float call_cost; //Solr Filed 16
+		String recipient_network; //Solr Filed 17
+		String cdr_type; //Solr Filed 18
+		
 		
 		for(int i=0; i<parsedDataList.size(); i++){
 			SolrInputDocument cdr = new SolrInputDocument();
@@ -112,7 +127,7 @@ public class SolrIndexer {
 			split_location = location_string.split(",");
 			city = split_location[0];
 			state =  split_location[1];
-	    	called_mobile = randomGen.getMobileNum();
+			recepient_mobile = randomGen.getMobileNum();
 			email = randomGen.getEmail();
 			
 			// Construct Solr Document
@@ -126,7 +141,7 @@ public class SolrIndexer {
 			cdr.addField("mobile", mobile);
 			cdr.addField("city", city);
 			cdr.addField("state", state);
-			cdr.addField("called_mobile", called_mobile);
+			cdr.addField("called_mobile", recepient_mobile);
 			cdr.addField("email", email);
 
 			// Commit the Solr Document
@@ -199,6 +214,16 @@ public class SolrIndexer {
 	    int randomAge = rand.nextInt((max - min) + 1) + min;
 	    return location.get(randomAge);
 	}
+	
+	public static String getReceipientNetwork() {
+		
+		int min = 0;
+		int max = 5;
+	    Random rand = new Random();
+	    int randomIndex = rand.nextInt((max - min) + 1) + min;
+	    return calledPartyNetwork.get(randomIndex);
+	}
+
 	
 	/**
 	 * Get the age groups based on the age
