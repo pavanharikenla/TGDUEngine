@@ -145,7 +145,7 @@ public class SolrIndexer {
 			cdr.addField("id", i);
 			cdr.addField("circle_id", circle_id);
 			cdr.addField("age", age);
-			cdr.addField("age_group", age_group);
+			cdr.addField("agegroup", age_group);
 			cdr.addField("mobile", mobile);
 			cdr.addField("city", city);
 			cdr.addField("state", state);
@@ -157,8 +157,9 @@ public class SolrIndexer {
 				
 				if(cdrArrary[2] != null) {
 					data_used_string = cdrArrary[2];
-					data_used_split = data_used_string.split(".");
+					data_used_split = data_used_string.split("\\.");
 					data_used = Integer.parseInt(data_used_split[0]);
+
 				}
 				
 				//Static Data Calculation
@@ -182,9 +183,9 @@ public class SolrIndexer {
 				data_usage_end_time = data_usage_start_time.plusMinutes(data_used);
 				mobile_app_name = getAppName();
 				
-				cdr.addField("data_usage_start_time", data_usage_start_time);
-				cdr.addField("data_usage_end_time", data_usage_end_time);
-				cdr.addField("data_used", data_used);
+				cdr.addField("data_usage_start_time", data_usage_start_time.toDate());
+				cdr.addField("data_usage_end_time", data_usage_end_time.toDate());
+				cdr.addField("dataUsed", data_used);
 				cdr.addField("mobile_app_name", mobile_app_name);
 		
 			} else if (cdr_type == 2){ //This is for call
