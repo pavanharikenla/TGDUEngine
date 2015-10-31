@@ -16,6 +16,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.DateTime;
 
 import com.tg.tgduengine.util.TSVReader;
+import com.tg.tgduengine.util.RandomDate;
 import com.tg.tgduengine.util.RandomGen; 
 
 public class SolrIndexer {
@@ -25,7 +26,8 @@ public class SolrIndexer {
     public static SolrServer server ;
     public static List<String> location;
     public static List<String> calledPartyNetwork;
-    public static List<String> cDRTypeList; 
+    public static List<String> cDRTypeList;
+    public static List<String> appList;
     
     static {
     	  location = new ArrayList<String>(11);
@@ -54,6 +56,19 @@ public class SolrIndexer {
     	  cDRTypeList.add("Data");
     	  cDRTypeList.add("Call");
     	  cDRTypeList.add("SMS");
+    	  
+    	  appList = new ArrayList<String>(10);
+    	  appList.add("Facebook");
+    	  appList.add("Twitter");
+    	  appList.add("WhatsApp");
+    	  appList.add("Netflix");
+    	  appList.add("Google Search");
+    	  
+    	  appList.add("Yahoo Stocks");
+    	  appList.add("Pandora Radio");
+    	  appList.add("Gmail");
+    	  appList.add("Google Play");
+    	  
    		  
     }
   
@@ -134,34 +149,36 @@ public class SolrIndexer {
 			cdr.addField("state", state);
 			cdr.addField("email", email);
 			
+			
 			//Fields specific to Usage
 			if (cdr_type == 1) { 
-				//Static Data Calculation
-				/*String tweetDate = "";
-				if(i < 3233)
-					tweetDate = "2015-10-31T16:00:31.000Z";
-				else if (i >= 3233 && i < 5999)
-					tweetDate = "2015-10-30T12:10:31.000Z";
-				else if (i >= 5999 && i < 9134)
-					tweetDate = "2015-10-29T10:22:31.000Z";
-				else if (i >= 9134 && i < 14474)
-					tweetDate = "2015-10-28T13:34:31.000Z";
-				else if (i >= 14474 && i < 19934)
-					tweetDate = "2015-10-27T18:00:31.000Z";
-				else if (i >= 19934 && i < 24000)
-					tweetDate = "2015-10-26T21:55:31.000Z";
-				else if (i >= 24000)
-					tweetDate = "2015-10-25T15:12:31.000Z";*/
-				
-				data_usage_start_time = getDateTime(cdrArrary[1]);
-				data_usage_end_time = data_usage_start_time.plusMinutes(10);
 				
 				if(cdrArrary[2] != null) {
 					data_used_string = cdrArrary[2];
 					data_used_split = data_used_string.split(".");
 					data_used = Integer.parseInt(data_used_split[0]);
 				}
-				//mobile_app_name = getAppName_or_URL;
+				
+				//Static Data Calculation
+				String sampleDate = "";
+				if(i < 13233)
+					sampleDate = "2015-11-03";
+				else if (i >= 13233 && i < 25999)
+					sampleDate = "2015-11-02";
+				else if (i >= 25999 && i < 29134)
+					sampleDate = "2015-11-01";
+				else if (i >= 29134 && i < 33447)
+					sampleDate = "2015-10-31";
+				else if (i >= 33447 && i < 39934)
+					sampleDate = "2015-10-30";
+				else if (i >= 39934 && i < 44000)
+					sampleDate = "2015-10-29";
+				else if (i >= 44000)
+					sampleDate = "2015-10-28";
+				
+				data_usage_start_time = RandomDate.getRandomCallTime(sampleDate);
+				data_usage_end_time = data_usage_start_time.plusMinutes(data_used);
+				mobile_app_name = getAppName();
 				
 				cdr.addField("data_usage_start_time", data_usage_start_time);
 				cdr.addField("data_usage_end_time", data_usage_end_time);
@@ -266,6 +283,16 @@ public class SolrIndexer {
 	    Random rand = new Random();
 	    int randomIndex = rand.nextInt((max - min) + 1) + min;
 	    return calledPartyNetwork.get(randomIndex);
+	}
+	
+
+	public static String getAppName() {
+		
+		int min = 0;
+		int max = 8;
+	    Random rand = new Random();
+	    int randomIndex = rand.nextInt((max - min) + 1) + min;
+	    return appList.get(randomIndex);
 	}
 
 	
