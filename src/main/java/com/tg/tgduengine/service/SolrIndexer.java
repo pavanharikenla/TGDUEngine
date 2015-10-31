@@ -89,37 +89,39 @@ public class SolrIndexer {
 		
 		
 		String[] cdrArrary;
-		int cdr_type = cdrType; //Solr Filed 18
-		String circle_id = ""; //Solr Field 1
+		int cdr_type = cdrType; //Solr Filed 1
+		String circle_id = ""; //Solr Field 2
 		
 		
 		/**
 		 * Sample Date Value is: 2013-12-31T04:40:00.000+05:30
 		 * So the data type in solar should be datetime (TrieDateField )
 		 */
-		DateTime data_usage_start_time; //Solr Field 2 
-		DateTime data_usage_end_time; //Solr Field 3 
+		DateTime data_usage_start_time; //Solr Field 3 
+		DateTime data_usage_end_time; //Solr Field 4 
 		
 		String data_used_string = "";
-		int data_used = 1; //Solr Field 4. by default the data used is set to 1 MB
-		int age; //Solr Field 5
-		String age_group; //Solr Field 6
-		String mobile; //Solr Field 7
+		int data_used = 1; //Solr Field 5. by default the data used is set to 1 MB
+		int age; //Solr Field 6
+		String age_group; //Solr Field 7
+		String mobile; //Solr Field 8
+		
 		String location_string; 
 		String[] split_location;
 		String[] data_used_split; 
-		String city; //Solr Field 8
-		String state; //Solr Field 9
+		
+		String city; //Solr Field 9
+		String state; //Solr Field 10
 		String email; //Solr Field 11
 		String mobile_app_name = ""; //Solr Filed 12
 		
 		
-		long recepient_mobile = 1234567890; //Solr Field 10
-		DateTime call_start = new DateTime(); //Solr Filed 13
-		DateTime call_end = new DateTime(); //Solr Filed 14
-		float call_duartion = 0.0F;// //Solr Filed 15
-		float call_cost = 0.0F; //Solr Filed 16
-		String recipient_network = ""; //Solr Filed 17
+		long recepient_mobile = 1234567890; //Solr Field 13
+		DateTime call_start = new DateTime(); //Solr Filed 14
+		DateTime call_end = new DateTime(); //Solr Filed 15
+		float call_duartion = 0.0F;// //Solr Filed 16
+		float call_cost = 0.0F; //Solr Filed 17
+		String recipient_network = ""; //Solr Filed 18
 		
 		
 		
