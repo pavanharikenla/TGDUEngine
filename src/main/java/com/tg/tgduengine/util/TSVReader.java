@@ -43,6 +43,38 @@ public class TSVReader {
 	    return allRows;
 	}
 	
+	public List<String[]> parseCallData(){
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.selectIndexes(0, 1, 5, 6);
+	    //the file used in the example uses '\n' as the line separator sequence.
+	    //the line separator sequence is defined here to ensure systems such as MacOS and Windows
+	    //are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+	    settings.getFormat().setLineSeparator("\n");
+
+	    // creates a TSV parser
+	    TsvParser parser = new TsvParser(settings);
+	    List<String[]> allRows = null;
+	    // parses all rows in one go.
+	    try {
+			allRows = parser.parseAll(getReader("C:\\Users\\Suman\\git\\TGDUEngine\\src\\main\\resources\\SampleTSV.txt"));
+				/*long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
+				DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
+				DateTime  dataisageEndTime = dt.plusMinutes(10);
+				// and here's how to get the String representation
+				//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
+				
+				System.out.println("Start Time: "+dt);
+				System.out.println("End Time: "+dataisageEndTime);*/
+				
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    return allRows;
+	}
+	
 	/*public void getDate(){
 		
 		long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);

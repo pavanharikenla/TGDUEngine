@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 
 import com.tg.tgduengine.util.TSVReader;
 import com.tg.tgduengine.util.RandomDate;
@@ -83,12 +84,17 @@ public class SolrIndexer {
 	public void indexCDRData(int cdrType) throws FileNotFoundException, IOException, SolrServerException {
 
 		TSVReader tsvReader = new TSVReader();
-		List<String[]> parsedDataList = tsvReader.parseData();
+		List<String[]> parsedDataList = null;
+		if(cdrType == 1)
+			parsedDataList = tsvReader.parseData();
+		else if(cdrType == 2)
+			parsedDataList = tsvReader.parseCallData();
 		SolrServer server = new HttpSolrServer(url);
 		RandomGen randomGen = new RandomGen();
 		
 		
 		String[] cdrArrary;
+		String cat = "call";
 		int cdr_type = cdrType; //Solr Filed 1
 		String circle_id = ""; //Solr Field 2
 		
@@ -142,7 +148,11 @@ public class SolrIndexer {
 			state =  split_location[1];
 			email = randomGen.getEmail();
 			
-			cdr.addField("id", i);
+			if(cdrType == 1)
+				cdr.addField("id", i);
+			else if(cdrType == 2)
+				cdr.addField("id", i+700000);
+			
 			cdr.addField("circle_id", circle_id);
 			cdr.addField("age", age);
 			cdr.addField("agegroup", age_group);
@@ -192,14 +202,51 @@ public class SolrIndexer {
 				
 				recepient_mobile = randomGen.getMobileNum();
 				//Fetch Call Start
-				//Fetch Call End
-				//Fetch Call Duration
-				//Fetch Call Cost
-				//Fetch recipient_network using getReceipientNetwork()
+				String sampleDate = "";
+				if(i < 13233)
+					sampleDate = "2015-11-03";
+				else if (i >= 13233 && i < 25999)
+					sampleDate = "2015-11-02";
+				else if (i >= 25999 && i < 29134)
+					sampleDate = "2015-11-01";
+				else if (i >= 29134 && i < 33447)
+					sampleDate = "2015-10-31";
+				else if (i >= 33447 && i < 39934)
+					sampleDate = "2015-10-30";
+				else if (i >= 39934 && i < 44000)
+					sampleDate = "2015-10-29";
+				else if (i >= 44000)
+					sampleDate = "2015-10-28";
 				
+				if(cdrArrary[2] != null) {
+					data_used_string = cdrArrary[2];
+					data_used_split = data_used_string.split("\\.");
+					data_used = Integer.parseInt(data_used_split[0]);
+
+				}
+				
+				call_start = RandomDate.getRandomCallTime(sampleDate);
+				
+				//Fetch Call End
+				int call_end_time = 1;
+				if(cdrArrary[3] != null) {
+					data_used_string = cdrArrary[3];
+					data_used_split = data_used_string.split("\\.");
+					call_end_time = Integer.parseInt(data_used_split[0]);
+
+				}
+				call_end = call_start.plusHours(call_end_time);
+				//Fetch Call Duration
+				call_duartion = Minutes.minutesBetween(call_start, call_end).getMinutes();
+				if(call_duartion ==0)
+					call_duartion = 1;
+				//Fetch Call Cost
+				//Fetch recipient_network using 
+				recipient_network = getReceipientNetwork();
+				cdr.addField("cat", "call");
 				cdr.addField("recepient_mobile", recepient_mobile);
-				cdr.addField("call_start", call_start);
-				cdr.addField("call_end", call_end);
+				cdr.addField("call_start", call_start.toDate());
+				cdr.addField("call_end", call_end.toDate());
 				cdr.addField("call_duartion", call_duartion);
 				cdr.addField("call_cost", call_cost);
 				cdr.addField("recipient_network", recipient_network);
@@ -211,7 +258,8 @@ public class SolrIndexer {
 			// Commit the Solr Document
 			server.add(cdr);
 			server.commit();
-			
+			if(i == 10000)
+				break;
 			if(i% 100 == 0)
 				System.out.println("The counter: "+i);
 		}
