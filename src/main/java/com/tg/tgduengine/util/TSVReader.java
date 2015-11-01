@@ -56,7 +56,7 @@ public class TSVReader {
 	    List<String[]> allRows = null;
 	    // parses all rows in one go.
 	    try {
-			allRows = parser.parseAll(getReader("C:\\Users\\Suman\\git\\TGDUEngine\\src\\main\\resources\\SampleTSV.txt"));
+			allRows = parser.parseAll(getReader("E:\\Personal\\sample\\sample.txt"));
 				/*long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
 				DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
 				DateTime  dataisageEndTime = dt.plusMinutes(10);

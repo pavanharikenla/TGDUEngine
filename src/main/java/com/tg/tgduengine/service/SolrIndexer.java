@@ -151,7 +151,7 @@ public class SolrIndexer {
 			if(cdrType == 1)
 				cdr.addField("id", i);
 			else if(cdrType == 2)
-				cdr.addField("id", i+700000);
+				cdr.addField("id", i+2000000000);
 			
 			cdr.addField("circle_id", circle_id);
 			cdr.addField("age", age);
@@ -203,32 +203,34 @@ public class SolrIndexer {
 				recepient_mobile = randomGen.getMobileNum();
 				//Fetch Call Start
 				String sampleDate = "";
-				if(i < 13233)
+				if(i < 100)
 					sampleDate = "2015-11-03";
-				else if (i >= 13233 && i < 25999)
+				else if (i >= 100 && i < 200)
 					sampleDate = "2015-11-02";
-				else if (i >= 25999 && i < 29134)
+				else if (i >= 200 && i < 300)
 					sampleDate = "2015-11-01";
-				else if (i >= 29134 && i < 33447)
+				else if (i >= 300 && i < 400)
 					sampleDate = "2015-10-31";
-				else if (i >= 33447 && i < 39934)
+				else if (i >= 400 && i < 500)
 					sampleDate = "2015-10-30";
-				else if (i >= 39934 && i < 44000)
+				else if (i >= 500 && i < 600)
 					sampleDate = "2015-10-29";
-				else if (i >= 44000)
+				else if (i >= 600)
 					sampleDate = "2015-10-28";
 				
+				
+				int call_start_time = 1;
 				if(cdrArrary[2] != null) {
 					data_used_string = cdrArrary[2];
 					data_used_split = data_used_string.split("\\.");
-					data_used = Integer.parseInt(data_used_split[0]);
+					call_start_time = Integer.parseInt(data_used_split[0]);
 
 				}
 				
 				call_start = RandomDate.getRandomCallTime(sampleDate);
-				
+				call_start = call_start.plusHours(call_start_time);
 				//Fetch Call End
-				int call_end_time = 1;
+				int call_end_time = 2;
 				if(cdrArrary[3] != null) {
 					data_used_string = cdrArrary[3];
 					data_used_split = data_used_string.split("\\.");
@@ -238,8 +240,10 @@ public class SolrIndexer {
 				call_end = call_start.plusHours(call_end_time);
 				//Fetch Call Duration
 				call_duartion = Minutes.minutesBetween(call_start, call_end).getMinutes();
-				if(call_duartion ==0)
-					call_duartion = 1;
+				if(call_duartion ==0){
+					call_duartion = 60;
+					call_end = call_start.plusHours(1);
+				}
 				//Fetch Call Cost
 				//Fetch recipient_network using 
 				recipient_network = getReceipientNetwork();
@@ -258,7 +262,7 @@ public class SolrIndexer {
 			// Commit the Solr Document
 			server.add(cdr);
 			server.commit();
-			if(i == 10000)
+			if(i == 710)
 				break;
 			if(i% 100 == 0)
 				System.out.println("The counter: "+i);
