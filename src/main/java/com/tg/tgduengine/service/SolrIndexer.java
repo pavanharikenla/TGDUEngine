@@ -15,20 +15,24 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.tg.tgduengine.util.TSVReader;
 import com.tg.tgduengine.util.RandomDate;
-import com.tg.tgduengine.util.RandomGen; 
+import com.tg.tgduengine.util.RandomGen;
+import com.tg.tgduengine.util.TSVReader; 
 
 public class SolrIndexer {
 
-	public static String line;
-	public static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonaws.com:8983/solr/collection1"; //Solr Instance
-    public static SolrServer server ;
-    public static List<String> location;
-    public static List<String> calledPartyNetwork;
-    public static List<String> cDRTypeList;
-    public static List<String> appList;
+   
+	private static final Logger LOGGER = LoggerFactory.getLogger(SolrIndexer.class);
+	static String line;
+	static final String url = "http://ec2-52-32-54-95.us-west-2.compute.amazonaws.com:8983/solr/collection1"; //Solr Instance
+	SolrServer server ;
+    static final List<String> location;
+    static final List<String> calledPartyNetwork;
+    static final List<String> cDRTypeList;
+    static final List<String> appList;
     
     static {
     	  location = new ArrayList<String>(11);
@@ -81,53 +85,52 @@ public class SolrIndexer {
     * @throws IOException
     * @throws SolrServerException
     */
-	public void indexCDRData(int cdrType) throws FileNotFoundException, IOException, SolrServerException {
+	public void indexCDRData(int cdrDataType) throws IOException, SolrServerException {
 
 		TSVReader tsvReader = new TSVReader();
 		List<String[]> parsedDataList = null;
-		if(cdrType == 1)
+		if(cdrDataType == 1)
 			parsedDataList = tsvReader.parseData();
-		else if(cdrType == 2)
+		else if(cdrDataType == 2)
 			parsedDataList = tsvReader.parseCallData();
-		SolrServer server = new HttpSolrServer(url);
+		server = new HttpSolrServer(url);
 		RandomGen randomGen = new RandomGen();
 		
 		
 		String[] cdrArrary;
-		String cat = "call";
-		int cdr_type = cdrType; //Solr Filed 1
-		String circle_id = ""; //Solr Field 2
+		int cdrType = cdrDataType; //Solr Filed 1
+		//String circleId = ""; //Solr Field 2
 		
 		
 		/**
 		 * Sample Date Value is: 2013-12-31T04:40:00.000+05:30
 		 * So the data type in solar should be datetime (TrieDateField )
 		 */
-		DateTime data_usage_start_time; //Solr Field 3 
-		DateTime data_usage_end_time; //Solr Field 4 
+		DateTime dataUsageStartTime; //Solr Field 3 
+		DateTime dataUsageEndtTime; //Solr Field 4 
 		
-		String data_used_string = "";
-		int data_used = 1; //Solr Field 5. by default the data used is set to 1 MB
+		
+		int dataUused = 1; //Solr Field 5. by default the data used is set to 1 MB
 		int age; //Solr Field 6
-		String age_group; //Solr Field 7
+		String ageGroup; //Solr Field 7
 		String mobile; //Solr Field 8
 		
-		String location_string; 
-		String[] split_location;
-		String[] data_used_split; 
+		String locationString; 
+		String[] splitLocation;
+		String[] dataUsedSplit; 
 		
 		String city; //Solr Field 9
 		String state; //Solr Field 10
 		String email; //Solr Field 11
-		String mobile_app_name = ""; //Solr Filed 12
+		 //Solr Filed 12
 		
 		
-		long recepient_mobile = 1234567890; //Solr Field 13
-		DateTime call_start = new DateTime(); //Solr Filed 14
-		DateTime call_end = new DateTime(); //Solr Filed 15
-		float call_duartion = 0.0F;// //Solr Filed 16
-		float call_cost = 0.0F; //Solr Filed 17
-		String recipient_network = ""; //Solr Filed 18
+		long recepientMobile;// = 1234567890; //Solr Field 13
+		DateTime callStart;// = new DateTime(); //Solr Filed 14
+		DateTime callEnd;// = new DateTime(); //Solr Filed 15
+		float callDuartion;// = 0.0F;// //Solr Filed 16
+		float callCost = 0.0F; //Solr Filed 17
+		String recipientNnetwork;// = ""; //Solr Filed 18
 		
 		
 		
@@ -138,14 +141,14 @@ public class SolrIndexer {
 			cdrArrary = parsedDataList.get(i);
 			
 			//Common Fields
-			circle_id = cdrArrary[0];
+			String circleId = cdrArrary[0];
 			age = generateAge();
-			age_group = getAgeGroup(age);
+			ageGroup = getAgeGroup(age);
 			mobile = getMobileNumber(i);
-			location_string = generateUserLocation();
-			split_location = location_string.split(",");
-			city = split_location[0];
-			state =  split_location[1];
+			locationString = generateUserLocation();
+			splitLocation = locationString.split(",");
+			city = splitLocation[0];
+			state =  splitLocation[1];
 			email = randomGen.getEmail();
 			
 			if(cdrType == 1)
@@ -153,9 +156,9 @@ public class SolrIndexer {
 			else if(cdrType == 2)
 				cdr.addField("id", i+2000000000);
 			
-			cdr.addField("circle_id", circle_id);
+			cdr.addField("circle_id", circleId);
 			cdr.addField("age", age);
-			cdr.addField("agegroup", age_group);
+			cdr.addField("agegroup", ageGroup);
 			cdr.addField("mobile", mobile);
 			cdr.addField("city", city);
 			cdr.addField("state", state);
@@ -163,12 +166,12 @@ public class SolrIndexer {
 			
 			
 			//Fields specific to Usage
-			if (cdr_type == 1) { 
+			if (cdrDataType == 1) { 
 				
 				if(cdrArrary[2] != null) {
-					data_used_string = cdrArrary[2];
-					data_used_split = data_used_string.split("\\.");
-					data_used = Integer.parseInt(data_used_split[0]);
+					String dataUsedString = cdrArrary[2];
+					dataUsedSplit = dataUsedString.split("\\.");
+					dataUused = Integer.parseInt(dataUsedSplit[0]);
 
 				}
 				
@@ -186,21 +189,21 @@ public class SolrIndexer {
 					sampleDate = "2015-10-30";
 				else if (i >= 39934 && i < 44000)
 					sampleDate = "2015-10-29";
-				else if (i >= 44000)
+				else if (i >= 44000 && i < 100000)
 					sampleDate = "2015-10-28";
 				
-				data_usage_start_time = RandomDate.getRandomCallTime(sampleDate);
-				data_usage_end_time = data_usage_start_time.plusMinutes(data_used);
-				mobile_app_name = getAppName();
+				dataUsageStartTime = RandomDate.getRandomCallTime(sampleDate);
+				dataUsageEndtTime = dataUsageStartTime.plusMinutes(dataUused);
+				String mobileAppName = getAppName();
 				
-				cdr.addField("data_usage_start_time", data_usage_start_time.toDate());
-				cdr.addField("data_usage_end_time", data_usage_end_time.toDate());
-				cdr.addField("dataUsed", data_used);
-				cdr.addField("mobile_app_name", mobile_app_name);
+				cdr.addField("data_usage_start_time", dataUsageEndtTime.toDate());
+				cdr.addField("data_usage_end_time", dataUsageEndtTime.toDate());
+				cdr.addField("dataUsed", dataUused);
+				cdr.addField("mobile_app_name", mobileAppName);
 		
-			} else if (cdr_type == 2){ //This is for call
+			} else if (cdrDataType == 2){ //This is for call
 				
-				recepient_mobile = randomGen.getMobileNum();
+				recepientMobile = randomGen.getMobileNum();
 				//Fetch Call Start
 				String sampleDate = "";
 				if(i < 100)
@@ -215,47 +218,47 @@ public class SolrIndexer {
 					sampleDate = "2015-10-30";
 				else if (i >= 500 && i < 600)
 					sampleDate = "2015-10-29";
-				else if (i >= 600)
+				else if (i >= 600 && i < 100000)
 					sampleDate = "2015-10-28";
 				
 				
-				int call_start_time = 1;
+				int callStartTime = 1;
 				if(cdrArrary[2] != null) {
-					data_used_string = cdrArrary[2];
-					data_used_split = data_used_string.split("\\.");
-					call_start_time = Integer.parseInt(data_used_split[0]);
+					String dataUsedString = cdrArrary[2];
+					dataUsedSplit = dataUsedString.split("\\.");
+					callStartTime = Integer.parseInt(dataUsedSplit[0]);
 
 				}
 				
-				call_start = RandomDate.getRandomCallTime(sampleDate);
-				call_start = call_start.plusHours(call_start_time);
+				callStart = RandomDate.getRandomCallTime(sampleDate);
+				callStart = callStart.plusHours(callStartTime);
 				//Fetch Call End
-				int call_end_time = 2;
+				int callEndTime = 2;
 				if(cdrArrary[3] != null) {
-					data_used_string = cdrArrary[3];
-					data_used_split = data_used_string.split("\\.");
-					call_end_time = Integer.parseInt(data_used_split[0]);
+					String dataUsedString = cdrArrary[3];
+					dataUsedSplit = dataUsedString.split("\\.");
+					callEndTime = Integer.parseInt(dataUsedSplit[0]);
 
 				}
-				call_end = call_start.plusHours(call_end_time);
+				callEnd = callStart.plusHours(callEndTime);
 				//Fetch Call Duration
-				call_duartion = Minutes.minutesBetween(call_start, call_end).getMinutes();
-				if(call_duartion ==0){
-					call_duartion = 60;
-					call_end = call_start.plusHours(1);
+				callDuartion = Minutes.minutesBetween(callStart, callEnd).getMinutes();
+				if(callDuartion == 0){
+					callDuartion = 60;
+					callEnd = callStart.plusHours(1);
 				}
 				//Fetch Call Cost
 				//Fetch recipient_network using 
-				recipient_network = getReceipientNetwork();
+				recipientNnetwork = getReceipientNetwork();
 				cdr.addField("cat", "call");
-				cdr.addField("recepient_mobile", recepient_mobile);
-				cdr.addField("call_start", call_start.toDate());
-				cdr.addField("call_end", call_end.toDate());
-				cdr.addField("call_duartion", call_duartion);
-				cdr.addField("call_cost", call_cost);
-				cdr.addField("recipient_network", recipient_network);
+				cdr.addField("recepient_mobile", recepientMobile);
+				cdr.addField("call_start", callStart.toDate());
+				cdr.addField("call_end", callEnd.toDate());
+				cdr.addField("call_duartion", callDuartion);
+				cdr.addField("call_cost", callCost);
+				cdr.addField("recipient_network", recipientNnetwork);
 				
-			} else if (cdr_type == 3){ //This is for SMS
+			} else if (cdrDataType == 3){ //This is for SMS
 				
 			}
 			
@@ -265,7 +268,7 @@ public class SolrIndexer {
 			if(i == 710)
 				break;
 			if(i% 100 == 0)
-				System.out.println("The counter: "+i);
+				LOGGER.info("The counter: "+i);
 		}
 	}
 	
@@ -273,25 +276,16 @@ public class SolrIndexer {
 	 * Method to search the indexed data from Solr
 	 * @throws SolrServerException
 	 */
-    public static void query_data() throws SolrServerException {
+	public void queryData() throws SolrServerException {
 
 		server = new HttpSolrServer(url);
 		SolrQuery query = new SolrQuery();
 		query.setQuery("*:*");
-		//query.addFilterQuery("tweet_content:*love*");
-		/*query.addFilterQuery("body:sprint");
-		query.setFields("id", "wireless_service_provider", "body");
-		query.set("dataType", "text_general");*/
-		
 		query.setStart(0);
 		query.setRows(1000);
 		QueryResponse response = server.query(query);
 		SolrDocumentList results = response.getResults();
-		System.out.println("Number of indexed records: " + results.getNumFound());
-		/*for (int i = 0; i < results.size(); i++) {
-			System.out.println(results.get(i));
-		}*/
-		
+		LOGGER.info("Number of indexed records: " + results.getNumFound());
 	}
 
 	/** 
@@ -299,11 +293,19 @@ public class SolrIndexer {
 	 * @throws SolrServerException
 	 * @throws IOException
 	 */
-	public static void deleteAllIndexData() throws SolrServerException, IOException {
-		SolrServer server = new HttpSolrServer(url);
-		server.deleteByQuery("*:*");//
-		server.commit();
-		System.out.println("all the data are deleted");
+    public void deleteAllIndexData() throws SolrServerException {
+		server = new HttpSolrServer(url);
+		try {
+			server.deleteByQuery("*:*");
+		} catch (IOException e) {
+			LOGGER.error("Exception in purging Solr Data ",e);
+		}//
+		try {
+			server.commit();
+		} catch (IOException e) {
+			LOGGER.error("Exception in purging Solr Data ",e);
+		}
+		LOGGER.info("all the data are deleted");
 	}
 
 	/**
@@ -314,15 +316,15 @@ public class SolrIndexer {
 		int min = 13;
 		int max = 70;
 	    Random rand = new Random();
-	    int randomAge = rand.nextInt((max - min) + 1) + min;
-	    return randomAge;
+	    return rand.nextInt((max - min) + 1) + min;
+	    
 	}
 	
 	/**
 	 * Generate a random City & State that can be assigned to a Twitter user
 	 * @return
 	 */
-	public static String generateUserLocation() {
+public static String generateUserLocation() {
 		
 		int min = 0;
 		int max = 10;
@@ -356,14 +358,10 @@ public class SolrIndexer {
 	 * @param age
 	 * @return
 	 */
-	public static String getAgeGroup(int age){
+public static String getAgeGroup(int age){
 		
 		String generation = "";
-		final String GEN_Z = "Generation Z";
-		final String MILLENNIALS = "Millennials";
-		final String GEN_X = "Generation X";
-		final String BOOMERS = "Baby Boomers";
-		
+				
 		/**
 		 * Generation Information
 		 * 1 - Generation Z = 2000 to present (Up to 16 years)
@@ -373,13 +371,13 @@ public class SolrIndexer {
 		 */
 		 
 		if(age < 16)
-			generation = GEN_Z;
+			generation = "Generation Z";
 		else if(age >=16 && age <35)
-			generation = MILLENNIALS;
+			generation = "Millennials";
 		else if(age >=35 && age <51)
-			generation = GEN_X;
+			generation = "Generation X";
 		else if(age >=51 && age <70)
-			generation = BOOMERS;
+			generation = "Baby Boomers";
 		
 		return generation;
 	}
@@ -387,35 +385,22 @@ public class SolrIndexer {
 	public DateTime getDateTime(String epochTime){
 		
 		long millisecondsSinceEpoch = Long.parseLong(epochTime);
-		DateTime dataUsageUsageTime = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
-		//DateTime  dataUsageEndTime = dt.plusMinutes(10);
-		// and here's how to get the String representation
-		//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
+		return new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
 		
-		/*	System.out.println("Start Time: "+dt);
-			System.out.println("End Time: "+dataisageEndTime);*/
-	
-		return dataUsageUsageTime;
 	}
 	
 	
-	public String getMobileNumber(int counter){
+public String getMobileNumber(int counter){
 		
 		String mobile = "";
-		if(counter < 3233)
+		if(counter < 6233)
 			mobile = "9052100567";
-		else if (counter >= 3233 && counter < 5999)
+		else if (counter >= 6233 && counter < 8233)
 			mobile = "7702303254";
-		else if (counter >= 5999 && counter < 9134)
+		else if (counter >= 8233 && counter < 16000)
 			mobile = "9052789567";
-		else if (counter >= 9134 && counter < 14474)
+		else if (counter >= 16000 && counter < 100000)
 			mobile = "9052567567";
-		else if (counter >= 14474 && counter < 19934)
-			mobile = "9345100567";
-		else if (counter >= 19934 && counter < 24000)
-			mobile = "3485210567";
-		else if (counter >= 24000)
-			mobile = "5605210023";
 		
 		return mobile;
 	}
@@ -429,8 +414,7 @@ public class SolrIndexer {
 		SolrIndexer solrIndexer = new SolrIndexer();
 		int cdrType = Integer.parseInt(args[0]);
 		solrIndexer.indexCDRData(cdrType);
-		//deleteAllIndexData();
-		//query_data();
+		
 	}
 	
 	

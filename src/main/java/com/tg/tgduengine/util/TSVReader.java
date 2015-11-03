@@ -6,11 +6,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 
 public class TSVReader {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(TSVReader.class);
+	
 	public List<String[]> parseData(){
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.selectIndexes(0, 1, 7);
@@ -25,19 +30,8 @@ public class TSVReader {
 	    // parses all rows in one go.
 	    try {
 			allRows = parser.parseAll(getReader("C:\\Ravi\\Part_1.txt"));
-				/*long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
-				DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
-				DateTime  dataisageEndTime = dt.plusMinutes(10);
-				// and here's how to get the String representation
-				//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
-				
-				System.out.println("Start Time: "+dt);
-				System.out.println("End Time: "+dataisageEndTime);*/
-				
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			} catch (Exception e) {
+				LOGGER.error("Exception in parsing the file: ",e);
 		}
 	    
 	    return allRows;
@@ -57,50 +51,30 @@ public class TSVReader {
 	    // parses all rows in one go.
 	    try {
 			allRows = parser.parseAll(getReader("E:\\Personal\\sample\\sample.txt"));
-				/*long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
-				DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
-				DateTime  dataisageEndTime = dt.plusMinutes(10);
-				// and here's how to get the String representation
-				//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
-				
-				System.out.println("Start Time: "+dt);
-				System.out.println("End Time: "+dataisageEndTime);*/
-				
-			
+
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			LOGGER.error("Exception in parsing the file: ",e);
 		}
 	    
 	    return allRows;
 	}
 	
-	/*public void getDate(){
-		
-		long millisecondsSinceEpoch = Long.parseLong(cpntent[1]);
-		
-		
-		DateTime dt = new DateTime(millisecondsSinceEpoch);//YYY-MM-DD
-		DateTime  dataisageEndTime = dt.plusMinutes(10);
-		// and here's how to get the String representation
-		//final String timeString2 = dt.toString("MM/dd/YYYY HH:mm:ss");
-		
-		System.out.println("Start Time: "+dt);
-		System.out.println("End Time: "+dataisageEndTime);
-	}*/
-	public Reader getReader(String relativePath)  {
-        System.out.println("File: "+relativePath+"this calss: "+this.getClass());
+	
+public Reader getReader(String relativePath)  {
+        
         InputStreamReader isR = null;
         try {
         	isR = new InputStreamReader(new FileInputStream(relativePath));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("Exception in parsing the file: " + relativePath, e);
+	        
 		}
+        
+        
         return isR;
         
     }
-
 
 }
 
